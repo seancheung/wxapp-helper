@@ -1,0 +1,176 @@
+{
+  "name": "wxapp-helper",
+  "displayName": "wxapp-helper",
+  "description": "WeChat Mini App Helper",
+  "version": "0.1.0",
+  "engines": {
+    "vscode": "^1.30.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onCommand:extension.createPage",
+    "onCommand:extension.createComponent"
+  ],
+  "main": "./out/extension.js",
+  "publisher": "seancheung",
+  "contributes": {
+    "commands": [
+      {
+        "command": "extension.createPage",
+        "title": "New WX Page"
+      },
+      {
+        "command": "extension.createComponent",
+        "title": "New WX Component"
+      }
+    ],
+    "menus": {
+      "explorer/context": [
+        {
+          "command": "extension.createPage",
+          "when": "explorerResourceIsFolder",
+          "group": "navigation"
+        },
+        {
+          "command": "extension.createComponent",
+          "when": "explorerResourceIsFolder",
+          "group": "navigation"
+        }
+      ]
+    },
+    "configuration": {
+      "type": "object",
+      "title": "WeChat mini app helper configuration",
+      "properties": {
+        "wxapp-helper.namingConvention": {
+          "type": "string",
+          "enum": [
+            "spinalcase",
+            "camelcase",
+            "pascalcase",
+            "snakecase",
+            "lowercase",
+            "uppercase"
+          ],
+          "default": "spinalcase",
+          "description": "Naming convention for generated files"
+        },
+        "wxapp-helper.page.typescript": {
+          "type": "boolean",
+          "default": false,
+          "description": "Using TypeScript instead of JavaScript"
+        },
+        "wxapp-helper.page.name": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "default": null,
+          "description": "Page file names without extensions. Set to null to be equal to folder name"
+        },
+        "wxapp-helper.page.script": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "default": "Page({})",
+          "description": "Page script template"
+        },
+        "wxapp-helper.page.wxml": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "default": "<view class=\"container\"></view>",
+          "description": "Page wxml template"
+        },
+        "wxapp-helper.page.wxss": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Page wxss template"
+        },
+        "wxapp-helper.page.json": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "default": "{}",
+          "description": "Page json template"
+        },
+        "wxapp-helper.component.typescript": {
+          "type": "boolean",
+          "default": false,
+          "description": "Using TypeScript instead of JavaScript"
+        },
+        "wxapp-helper.component.name": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "default": null,
+          "description": "Component file names without extensions. Set to null to be equal to folder name"
+        },
+        "wxapp-helper.component.script": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "default": "Component({\n  data: {},\n  properties: {},\n  methods: {}\n})",
+          "description": "Component script template"
+        },
+        "wxapp-helper.component.wxml": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "default": "<view class=\"container\">\n  <slot></slot>\n</view>",
+          "description": "Component wxml template"
+        },
+        "wxapp-helper.component.wxss": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Component wxss template"
+        },
+        "wxapp-helper.component.json": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "default": "{\n  \"component\": true\n}",
+          "description": "Component json template"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "postinstall": "node ./node_modules/vscode/bin/install",
+    "test": "npm run compile && node ./node_modules/vscode/bin/test"
+  },
+  "devDependencies": {
+    "typescript": "^3.1.4",
+    "vscode": "^1.1.25",
+    "tslint": "^5.8.0",
+    "@types/node": "^8.10.25",
+    "@types/mocha": "^2.2.42"
+  },
+  "dependencies": {
+    "stringcase": "^4.3.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/seancheung/wxapp-helper.git"
+  },
+  "bugs": {
+    "url": "https://github.com/seancheung/wxapp-helper/issues"
+  },
+  "homepage": "https://github.com/seancheung/wxapp-helper#readme"
+}
