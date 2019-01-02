@@ -100,7 +100,7 @@ export class Generator {
 
   decode(template: string): string {
     if (/^base64\:/i.test(template)) {
-      return Buffer.from(template, "base64").toString();
+      return Buffer.from(template.substr(7), "base64").toString();
     }
     return template;
   }

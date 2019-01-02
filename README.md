@@ -32,3 +32,7 @@ This extension contributes the following settings:
 ### 0.1.0
 
 Initial release of wxapp-helper
+
+### 0.1.1
+
+- Fixed Base64 encoded templates parsing error
