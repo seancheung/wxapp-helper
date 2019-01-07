@@ -1,12 +1,20 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from "vscode";
-import { Generator } from "./generator";
+import {
+  FileGenerator,
+  LoremGenerator,
+  ImageGenerator,
+  AvatarGenerator
+} from "./generator";
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
-  const generator = new Generator();
+  const file = new FileGenerator();
+  const lorem = new LoremGenerator();
+  const image = new ImageGenerator();
+  const avatar = new AvatarGenerator();
 
   // The command has been defined in the package.json file
   // Now provide the implementation of the command with registerCommand
@@ -15,7 +23,7 @@ export function activate(context: vscode.ExtensionContext) {
     vscode.commands.registerCommand(
       "extension.createPage",
       (uri: vscode.Uri) => {
-        generator.execute(uri, "page");
+        file.execute(uri, "page");
       }
     )
   );
@@ -23,9 +31,24 @@ export function activate(context: vscode.ExtensionContext) {
     vscode.commands.registerCommand(
       "extension.createComponent",
       (uri: vscode.Uri) => {
-        generator.execute(uri, "component");
+        file.execute(uri, "component");
       }
     )
+  );
+  context.subscriptions.push(
+    vscode.commands.registerCommand("extension.insertLorem", () => {
+      lorem.execute();
+    })
+  );
+  context.subscriptions.push(
+    vscode.commands.registerCommand("extension.insertImage", () => {
+      image.execute();
+    })
+  );
+  context.subscriptions.push(
+    vscode.commands.registerCommand("extension.insertAvatar", () => {
+      avatar.execute();
+    })
   );
 }
 

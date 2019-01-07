@@ -2,7 +2,7 @@
   "name": "wxapp-helper",
   "displayName": "wxapp-helper",
   "description": "WeChat Mini App Helper",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "engines": {
     "vscode": "^1.30.0"
   },
@@ -11,7 +11,10 @@
   ],
   "activationEvents": [
     "onCommand:extension.createPage",
-    "onCommand:extension.createComponent"
+    "onCommand:extension.createComponent",
+    "onCommand:extension.insertLorem",
+    "onCommand:extension.insertImage",
+    "onCommand:extension.insertAvatar"
   ],
   "main": "./out/extension.js",
   "publisher": "seancheung",
@@ -19,11 +22,23 @@
     "commands": [
       {
         "command": "extension.createPage",
-        "title": "New WX Page"
+        "title": "%cmd.createPage.title%"
       },
       {
         "command": "extension.createComponent",
-        "title": "New WX Component"
+        "title": "%cmd.createComponent.title%"
+      },
+      {
+        "command": "extension.insertLorem",
+        "title": "%cmd.insertLorem.title%"
+      },
+      {
+        "command": "extension.insertImage",
+        "title": "%cmd.insertImage.title%"
+      },
+      {
+        "command": "extension.insertAvatar",
+        "title": "%cmd.insertAvatar.title%"
       }
     ],
     "menus": {
@@ -38,11 +53,25 @@
           "when": "explorerResourceIsFolder",
           "group": "navigation"
         }
+      ],
+      "editor/context": [
+        {
+          "command": "extension.insertLorem",
+          "group": "9_cutcopypaste "
+        },
+        {
+          "command": "extension.insertImage",
+          "group": "9_cutcopypaste "
+        },
+        {
+          "command": "extension.insertAvatar",
+          "group": "9_cutcopypaste "
+        }
       ]
     },
     "configuration": {
       "type": "object",
-      "title": "WeChat mini app helper configuration",
+      "title": "%ext.config.title%",
       "properties": {
         "wxapp-helper.namingConvention": {
           "type": "string",
@@ -55,12 +84,12 @@
             "uppercase"
           ],
           "default": "spinalcase",
-          "description": "Naming convention for generated files"
+          "description": "%ext.config.namingConvention%"
         },
         "wxapp-helper.page.typescript": {
           "type": "boolean",
           "default": false,
-          "description": "Using TypeScript instead of JavaScript"
+          "description": "%ext.config.page.typescript%"
         },
         "wxapp-helper.page.name": {
           "type": [
@@ -68,7 +97,7 @@
             "null"
           ],
           "default": null,
-          "description": "Page file names without extensions. Set to null to be equal to folder name"
+          "description": "%ext.config.page.name%"
         },
         "wxapp-helper.page.script": {
           "type": [
@@ -76,7 +105,7 @@
             "null"
           ],
           "default": "Page({})",
-          "description": "Page script template"
+          "description": "%ext.config.page.script%"
         },
         "wxapp-helper.page.wxml": {
           "type": [
@@ -84,14 +113,14 @@
             "null"
           ],
           "default": "<view class=\"container\"></view>",
-          "description": "Page wxml template"
+          "description": "%ext.config.page.wxml%"
         },
         "wxapp-helper.page.wxss": {
           "type": [
             "string",
             "null"
           ],
-          "description": "Page wxss template"
+          "description": "%ext.config.page.wxss%"
         },
         "wxapp-helper.page.json": {
           "type": [
@@ -99,12 +128,12 @@
             "null"
           ],
           "default": "{}",
-          "description": "Page json template"
+          "description": "%ext.config.page.wxss%"
         },
         "wxapp-helper.component.typescript": {
           "type": "boolean",
           "default": false,
-          "description": "Using TypeScript instead of JavaScript"
+          "description": "%ext.config.component.typescript%"
         },
         "wxapp-helper.component.name": {
           "type": [
@@ -112,7 +141,7 @@
             "null"
           ],
           "default": null,
-          "description": "Component file names without extensions. Set to null to be equal to folder name"
+          "description": "%ext.config.component.name%"
         },
         "wxapp-helper.component.script": {
           "type": [
@@ -120,7 +149,7 @@
             "null"
           ],
           "default": "Component({\n  data: {},\n  properties: {},\n  methods: {}\n})",
-          "description": "Component script template"
+          "description": "%ext.config.component.script%"
         },
         "wxapp-helper.component.wxml": {
           "type": [
@@ -128,14 +157,14 @@
             "null"
           ],
           "default": "<view class=\"container\">\n  <slot></slot>\n</view>",
-          "description": "Component wxml template"
+          "description": "%ext.config.component.wxml%"
         },
         "wxapp-helper.component.wxss": {
           "type": [
             "string",
             "null"
           ],
-          "description": "Component wxss template"
+          "description": "C%ext.config.component.wxss%"
         },
         "wxapp-helper.component.json": {
           "type": [
@@ -143,7 +172,49 @@
             "null"
           ],
           "default": "{\n  \"component\": true\n}",
-          "description": "Component json template"
+          "description": "%ext.config.component.json%"
+        },
+        "wxapp-helper.lorem.count": {
+          "type": "integer",
+          "default": 10,
+          "description": "%ext.config.lorem.count%"
+        },
+        "wxapp-helper.lorem.characters": {
+          "type": "string",
+          "default": "石室诗士施氏，嗜狮，誓食十狮。施氏时时适市视狮。十时，适十狮适市。是时，适施氏适市。施氏视是十狮，恃矢势，使是十狮逝世。氏拾是十狮尸，适石室。石室湿，氏使侍拭石室。石室拭，氏始试食是十狮尸。食时，始识是十狮尸，实十石狮尸。试释是事。",
+          "description": "%ext.config.lorem.characters%"
+        },
+        "wxapp-helper.image.src": {
+          "type": "string",
+          "enum": [
+            "placeimg",
+            "picsum"
+          ],
+          "default": "placeimg",
+          "description": "%ext.config.image.src%"
+        },
+        "wxapp-helper.image.width": {
+          "type": "integer",
+          "default": 640,
+          "description": "%ext.config.image.width%"
+        },
+        "wxapp-helper.image.height": {
+          "type": "integer",
+          "default": 480,
+          "description": "%ext.config.image.height%"
+        },
+        "wxapp-helper.avatar.src": {
+          "type": "string",
+          "enum": [
+            "pravatar"
+          ],
+          "default": "pravatar",
+          "description": "%ext.config.avatar.src%"
+        },
+        "wxapp-helper.avatar.size": {
+          "type": "integer",
+          "default": 128,
+          "description": "%ext.config.avatar.size%"
         }
       }
     }

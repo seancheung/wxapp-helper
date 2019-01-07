@@ -10,7 +10,7 @@ class DuplicateError extends Error {
   }
 }
 
-export class Generator {
+export class FileGenerator {
   async execute(uri: vscode.Uri, type: "page" | "component"): Promise<void> {
     const name: string | undefined = await this.prompt(type);
     if (!name) {
@@ -36,7 +36,7 @@ export class Generator {
       `${stringcase.capitalcase(type)}: '${name}' successfully created`
     );
   }
-  async prompt(type: string): Promise<string | undefined> {
+  protected async prompt(type: string): Promise<string | undefined> {
     return vscode.window.showInputBox({
       ignoreFocusOut: true,
       placeHolder: `Please enter ${type} name`,
@@ -55,7 +55,7 @@ export class Generator {
       prompt: `${type} name`
     });
   }
-  create(dir: string, name: string, type: string): void {
+  protected create(dir: string, name: string, type: string): void {
     const config = vscode.workspace.getConfiguration("wxapp-helper");
     const ts: boolean | undefined = config.get(`${type}.typescript`);
     const conv: stringcase.Conventions =
@@ -98,10 +98,156 @@ export class Generator {
     }
   }
 
-  decode(template: string): string {
+  protected decode(template: string): string {
     if (/^base64\:/i.test(template)) {
       return Buffer.from(template.substr(7), "base64").toString();
     }
     return template;
+  }
+}
+
+abstract class TextGenerator {
+  async execute() {
+    const editor = vscode.window.activeTextEditor;
+    if (editor) {
+      const args = await this.prompt();
+      const text = this.generate(args);
+      if (text) {
+        editor.edit(edit =>
+          editor.selections.forEach(selection => {
+            edit.delete(selection);
+            edit.insert(selection.start, text);
+          })
+        );
+      }
+    }
+  }
+
+  protected abstract async prompt(): Promise<any>;
+  protected abstract generate(args: any): string | undefined;
+}
+
+export class LoremGenerator extends TextGenerator {
+  protected async prompt(): Promise<number | undefined> {
+    const config = vscode.workspace.getConfiguration("wxapp-helper");
+    const count = await vscode.window.showInputBox({
+      value: config.get("lorem.count") || "10",
+      ignoreFocusOut: true,
+      placeHolder: `Please enter characters count`,
+      validateInput(count: string): string | null {
+        if (!count) {
+          return "Count is required";
+        }
+        if (!/^\d+$/.test(count)) {
+          return "Invalid count";
+        }
+        return null;
+      },
+      prompt: `Number of characters to insert`
+    });
+    if (count) {
+      return parseInt(count);
+    }
+  }
+
+  protected generate(count: number = 10): string | undefined {
+    const config = vscode.workspace.getConfiguration("wxapp-helper");
+    const characters: string | undefined = config.get("lorem.characters");
+    if (!characters) {
+      vscode.window.showErrorMessage("No characters in config");
+      return;
+    }
+    if (count <= characters.length) {
+      return characters.slice(0, count);
+    }
+    const repeat = Math.floor(count / characters.length);
+    const mod = count % characters.length;
+    return (
+      Array(repeat)
+        .fill(characters)
+        .join("") + characters.slice(0, mod)
+    );
+  }
+}
+
+export class ImageGenerator extends TextGenerator {
+  protected async prompt(): Promise<[number, number] | undefined> {
+    const config = vscode.workspace.getConfiguration("wxapp-helper");
+    const width = config.get("image.width");
+    const height = config.get("image.height");
+    let size: string | undefined;
+    if (width && height) {
+      size = `${width}/${height}`;
+    }
+    const value = await vscode.window.showInputBox({
+      value: size || "640/480",
+      ignoreFocusOut: true,
+      placeHolder: `Please enter image width/height, height can be omitted`,
+      validateInput(size: string): string | null {
+        if (!size) {
+          return "Size is required";
+        }
+        if (!/^\d+(\/\d+)?$/.test(size)) {
+          return "Invalid size";
+        }
+        return null;
+      },
+      prompt: `Image size`
+    });
+    if (value) {
+      const [w, h] = value.split("/");
+      return h ? [parseInt(w), parseInt(h)] : [parseInt(w), parseInt(w)];
+    }
+  }
+  protected generate(
+    [width, height]: [number, number] = [640, 480]
+  ): string | undefined {
+    const config = vscode.workspace.getConfiguration("wxapp-helper");
+    const src: string | undefined = config.get("image.src");
+    if (src) {
+      switch (src) {
+        case "placeimg":
+          return `https://placeimg.com/${width}/${height}/any`;
+        case "picsum":
+          return `https://picsum.photos/${width}/${height}`;
+      }
+    }
+    vscode.window.showErrorMessage("No image source in config");
+  }
+}
+
+export class AvatarGenerator extends TextGenerator {
+  protected async prompt(): Promise<number | undefined> {
+    const config = vscode.workspace.getConfiguration("wxapp-helper");
+    const size: string | undefined = config.get("avatar.size");
+    const value = await vscode.window.showInputBox({
+      value: size || "128",
+      ignoreFocusOut: true,
+      placeHolder: `Please enter avatar size`,
+      validateInput(size: string): string | null {
+        if (!size) {
+          return "Size is required";
+        }
+        if (!/^\d+$/.test(size)) {
+          return "Invalid size";
+        }
+        return null;
+      },
+      prompt: `Avatar size`
+    });
+    if (value) {
+      return parseInt(value);
+    }
+  }
+  protected generate(size: number = 128): string | undefined {
+    const config = vscode.workspace.getConfiguration("wxapp-helper");
+    const src: string | undefined = config.get("avatar.src");
+    if (src) {
+      switch (src) {
+        case "pravatar":
+          return `http://i.pravatar.cc/${size}`;
+      }
+    }
+    vscode.window.showErrorMessage("No avatar source in config");
   }
 }
