@@ -14,3 +14,7 @@
 - Added image generating command
 - Added avatar generating command
 - Added Chinese localization support
+
+### 0.2.1
+
+- Fixed ESC on prompt cannot stop generating issue

@@ -111,6 +111,9 @@ abstract class TextGenerator {
     const editor = vscode.window.activeTextEditor;
     if (editor) {
       const args = await this.prompt();
+      if (args === undefined) {
+        return;
+      }
       const text = this.generate(args);
       if (text) {
         editor.edit(edit =>
@@ -150,7 +153,7 @@ export class LoremGenerator extends TextGenerator {
     }
   }
 
-  protected generate(count: number = 10): string | undefined {
+  protected generate(count: number): string | undefined {
     const config = vscode.workspace.getConfiguration("wxapp-helper");
     const characters: string | undefined = config.get("lorem.characters");
     if (!characters) {
@@ -199,9 +202,7 @@ export class ImageGenerator extends TextGenerator {
       return h ? [parseInt(w), parseInt(h)] : [parseInt(w), parseInt(w)];
     }
   }
-  protected generate(
-    [width, height]: [number, number] = [640, 480]
-  ): string | undefined {
+  protected generate([width, height]: [number, number]): string | undefined {
     const config = vscode.workspace.getConfiguration("wxapp-helper");
     const src: string | undefined = config.get("image.src");
     if (src) {
@@ -239,7 +240,7 @@ export class AvatarGenerator extends TextGenerator {
       return parseInt(value);
     }
   }
-  protected generate(size: number = 128): string | undefined {
+  protected generate(size: number): string | undefined {
     const config = vscode.workspace.getConfiguration("wxapp-helper");
     const src: string | undefined = config.get("avatar.src");
     if (src) {
